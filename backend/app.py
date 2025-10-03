@@ -2,6 +2,7 @@ from flask import Flask
 from model import Product, db
 from db_seeder import get_random_data
 from flask import request, jsonify
+import math
 
 
 app = Flask(__name__)
@@ -17,15 +18,19 @@ def products():
     if request.args.get("page") == None:
         page = 1
     else:
-        page = int(request.args.get("page")) 
+        page = int(request.args.get("page"))
 
     if request.args.get("limit") == None:
         limit = 50
     else:
-        limit = int(request.args.get("limit")) 
+        limit = int(request.args.get("limit"))
 
     products = Product.query.paginate(page=page, per_page=limit, error_out=False).items
-    return jsonify(products)
+    total_products_count = Product.query.count()
+    return jsonify({
+        "products": products,
+        "page_count": math.ceil(total_products_count / limit),
+    })
 
 
 with app.app_context():
