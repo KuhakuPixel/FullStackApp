@@ -17,12 +17,16 @@ class MyPageController extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         Spacer(),
-        Text("page ${context.watch<AppStateProvider>().page}"),
+        Text("page ${context.watch<AppStateProvider>().page} / ${context.watch<AppStateProvider>().pageCount} "),
         Spacer(),
         IconButton(
-          onPressed: () {
-            context.read<AppStateProvider>().incrementPage(1);
-          },
+          onPressed:
+              (context.watch<AppStateProvider>().page ==
+                  context.watch<AppStateProvider>().pageCount)
+              ? null
+              : () {
+                  context.read<AppStateProvider>().incrementPage(1);
+                },
           icon: Icon(Icons.arrow_forward),
         ),
       ],

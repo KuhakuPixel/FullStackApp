@@ -67,7 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             builder:
                 (BuildContext context, AsyncSnapshot<LoadedData> snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasError) {
+                    // Handle the error state
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData) {
+                    // load page count and the data
+                    context.read<AppStateProvider>().setPageCount(snapshot.data!.pageCount);
                     return Expanded(
                       child: ListView(
                         children: snapshot.data!.datas
