@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/app_state.dart';
+import 'package:frontend/consts.dart';
+import 'package:frontend/data_loader.dart';
 import 'package:frontend/my_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -58,18 +60,31 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           MyPageController(),
-          Expanded(
-            child: ListView(
-              children: datas
-                  .map(
-                    (data) => SearchResultWidget(
-                      data["name"],
-                      data["price"],
-                      data["category"],
-                    ),
-                  )
-                  .toList(),
+          FutureBuilder<LoadedData>(
+            future: DataLoader.fetchData(
+              context.watch<AppStateProvider>().page,
+              PAGE_LIMIT,
             ),
+            builder:
+                (BuildContext context, AsyncSnapshot<LoadedData> snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: ListView(
+                        children: snapshot.data!.datas
+                            .map(
+                              (data) => SearchResultWidget(
+                                data["name"],
+                                data["price"],
+                                data["category"],
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
           ),
         ],
       ),
