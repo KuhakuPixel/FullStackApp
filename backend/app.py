@@ -1,6 +1,8 @@
 from flask import Flask
 from model import Product, db
 from db_seeder import get_random_data
+from flask import request, jsonify
+
 
 app = Flask(__name__)
 # configure the SQLite database, relative to the app instance folder
@@ -9,9 +11,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.sqlite3"
 db.init_app(app)
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/products", methods=["GET"])
+def products():
+    page = request.args.get("page")
+    limit = request.args.get("limit")
+
+    products = Product.query.paginate(page=page, per_page=limit, error_out=False).items
+    return jsonify(products)
 
 
 with app.app_context():
