@@ -42,7 +42,7 @@ def get_random_data(length):
                 description=book_desc,
                 price=fake.pyint(),
                 category=random.choice(book_categories),
-                img_url=fake.image_url(),
+                img_url=fake.image_url(height=400, width=400),
             )
         )
     return products

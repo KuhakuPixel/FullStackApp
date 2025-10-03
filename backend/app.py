@@ -13,8 +13,16 @@ db.init_app(app)
 
 @app.route("/products", methods=["GET"])
 def products():
-    page = request.args.get("page")
-    limit = request.args.get("limit")
+
+    if request.args.get("page") == None:
+        page = 1
+    else:
+        page = int(request.args.get("page")) 
+
+    if request.args.get("limit") == None:
+        limit = 50
+    else:
+        limit = int(request.args.get("limit")) 
 
     products = Product.query.paginate(page=page, per_page=limit, error_out=False).items
     return jsonify(products)
@@ -26,7 +34,7 @@ with app.app_context():
     if len(items) == 0:
         print("database has no data, seeding database ...")
         # --------- initialize data ----------------
-        products = get_random_data(500)
+        products = get_random_data(700)
         for p in products:
             db.session.add(p)
         db.session.commit()
