@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int page = 0;
+  int page = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           IconButton(
-            onPressed: page == 0 ? null: () {
+            onPressed: page == 1 ? null: () {
               setState(() {
                 page -= 1;
               });
