@@ -3,6 +3,9 @@ import 'package:frontend/app_state.dart';
 import 'package:provider/provider.dart';
 
 class MyPageController extends StatelessWidget {
+  int pageCount = 0;
+  MyPageController(this.pageCount);
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -17,12 +20,10 @@ class MyPageController extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         Spacer(),
-        Text("page ${context.watch<AppStateProvider>().page} / ${context.watch<AppStateProvider>().pageCount} "),
+        Text("page ${context.watch<AppStateProvider>().page} / ${pageCount} "),
         Spacer(),
         IconButton(
-          onPressed:
-              (context.watch<AppStateProvider>().page ==
-                  context.watch<AppStateProvider>().pageCount)
+          onPressed: (context.watch<AppStateProvider>().page == pageCount)
               ? null
               : () {
                   context.read<AppStateProvider>().incrementPage(1);
