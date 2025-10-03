@@ -20,11 +20,17 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          brightness: Brightness.light,
+          /* light theme settings */
+        ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          /* dark theme settings */
+        ),
+        themeMode: ThemeMode.dark,
 
         title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
@@ -40,54 +46,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Map<String, dynamic>> datas = [
+    {"name": "cool name", "price": 300, "category": "horror"},
+    {"name": "cool name", "price": 300, "category": "horror"},
+    {"name": "cool name", "price": 300, "category": "horror"},
+    {"name": "cool name", "price": 300, "category": "horror"},
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           MyPageController(),
-          Expanded(child:ListView(children: [
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-            Text("hi hi hi"),
-          ],))
+          Expanded(
+            child: ListView(
+              children: datas
+                  .map(
+                    (data) => SearchResultWidget(
+                      data["name"],
+                      data["price"],
+                      data["category"],
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
         ],
       ),
     );

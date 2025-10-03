@@ -29,3 +29,32 @@ class MyPageController extends StatelessWidget {
     );
   }
 }
+
+class SearchResultWidget extends StatelessWidget {
+  final String name;
+  final int price;
+  final String category;
+
+  SearchResultWidget(this.name, this.price, this.category);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Card(
+      child: Container(
+        padding: EdgeInsets.all(15.0),
+        child: Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text(name), Text("\$ ${price}"), Text(category)],
+            ),
+            Spacer(),
+            OutlinedButton(onPressed: () {}, child: Text("View Detail")),
+          ],
+        ),
+      ),
+    );
+  }
+}
