@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/app_state.dart';
+import 'package:frontend/my_widgets.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,16 +11,22 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppStateProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
 
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -31,33 +40,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int page = 1;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            onPressed: page == 1 ? null: () {
-              setState(() {
-                page -= 1;
-              });
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
-          Spacer(),
-          Text("page ${page}"),
-          Spacer(),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                page += 1;
-              });
-            },
-            icon: Icon(Icons.arrow_forward),
-          ),
+      body: Column(
+        children: [
+          MyPageController(),
+          Expanded(child:ListView(children: [
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+            Text("hi hi hi"),
+          ],))
         ],
       ),
     );
