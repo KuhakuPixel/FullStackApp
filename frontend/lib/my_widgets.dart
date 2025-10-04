@@ -98,7 +98,9 @@ class ProductDetailPage extends StatelessWidget {
               Text("price: \$ ${price}"),
               Text("description:  ${description}"),
               Text("category:  ${category}"),
-              Image.network(img_url),
+              Image.network(
+                "${img_url}?${DateTime.now().millisecondsSinceEpoch.toString()}",
+              ),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
