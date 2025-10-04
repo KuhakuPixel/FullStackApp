@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<LoadedData>(
-        future: DataLoader.fetchData(
+        future: DataLoader.fetchProducts(
           context.watch<AppStateProvider>().page,
           PAGE_LIMIT,
         ),
@@ -73,6 +73,24 @@ class _MyHomePageState extends State<MyHomePage> {
                             data["name"],
                             data["price"],
                             data["category"],
+                            onViewDetail: () async {
+                              var p = await DataLoader.fetchProduct(data["id"]);
+                              print(p);
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) =>  ProductDetailPage(
+                                    category: p["category"],
+                                    description: p["description"],
+                                    id: p["id"],
+                                    img_url: p["img_url"],
+                                    name: p["name"],
+                                    price: p["price"],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         )
                         .toList(),
