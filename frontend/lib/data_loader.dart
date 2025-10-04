@@ -65,7 +65,12 @@ class DataLoader {
     }
   }
 
-  static Future<LoadedData> fetchProducts(int page, int limit) async {
+  static Future<LoadedData> fetchProducts(
+    int page,
+    int limit, {
+    required String category,
+    required String search,
+  }) async {
     final String path = '/products';
 
     // Construct the URI with query parameters
@@ -74,7 +79,12 @@ class DataLoader {
       host: host,
       port: port,
       path: path,
-      queryParameters: {'page': page.toString(), 'limit': limit.toString()},
+      queryParameters: {
+        'page': page.toString(),
+        'limit': limit.toString(),
+        "search": search,
+        "category": category,
+      },
     );
 
     print('Attempting to fetch data from: $uri');

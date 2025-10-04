@@ -5,14 +5,20 @@ class AppStateProvider extends ChangeNotifier {
   int limit = 50;
   int pageCount = 0;
   String category = "";
+  String search = "";
 
-  void setPageCount(int pageCount) {
-    this.pageCount = pageCount;
+  void setPage(int page) {
+    this.page = page;
     notifyListeners(); 
   }
 
   void setCategory(String category) {
     this.category = category;
+    notifyListeners(); 
+  }
+
+  void setSearch(String search) {
+    this.search = search;
     notifyListeners(); 
   }
 

@@ -4,7 +4,10 @@ import 'package:frontend/data_loader.dart';
 import 'package:provider/provider.dart';
 
 class CategoryDropDown extends StatelessWidget {
-  CategoryDropDown();
+
+  void Function(String?) onSelected;
+  String value;
+  CategoryDropDown({required this.onSelected, required this.value });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,7 @@ class CategoryDropDown extends StatelessWidget {
 
               */
               DropdownButton<String>(
-                value: context.watch<AppStateProvider>().category,
+                value: value,
                 items: snapshot.data!.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -38,7 +41,8 @@ class CategoryDropDown extends StatelessWidget {
                 }).toList(),
                 onChanged: (value) {
                   // TODO add callback
-                  context.read<AppStateProvider>().setCategory(value!);
+                  onSelected(value)
+                  ;
                 },
               ),
             ],
@@ -54,7 +58,8 @@ class CategoryDropDown extends StatelessWidget {
 
 class MyPageController extends StatelessWidget {
   int pageCount = 0;
-  MyPageController(this.pageCount);
+  int currentPage = 1;
+  MyPageController({required this.currentPage,required this.pageCount});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,7 @@ class MyPageController extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         IconButton(
-          onPressed: context.watch<AppStateProvider>().page == 1
+          onPressed: currentPage == 1
               ? null
               : () {
                   context.read<AppStateProvider>().incrementPage(-1);
@@ -70,10 +75,10 @@ class MyPageController extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
         Spacer(),
-        Text("page ${context.watch<AppStateProvider>().page} / ${pageCount} "),
+        Text("page ${currentPage} / ${pageCount} "),
         Spacer(),
         IconButton(
-          onPressed: (context.watch<AppStateProvider>().page == pageCount)
+          onPressed: (currentPage == pageCount)
               ? null
               : () {
                   context.read<AppStateProvider>().incrementPage(1);

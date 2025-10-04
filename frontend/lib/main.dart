@@ -54,6 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: FutureBuilder<LoadedData>(
         future: DataLoader.fetchProducts(
           context.watch<AppStateProvider>().page,
+          search: context.watch<AppStateProvider>().search,
+          category: context.watch<AppStateProvider>().category,
           PAGE_LIMIT,
         ),
         builder: (BuildContext context, AsyncSnapshot<LoadedData> snapshot) {
@@ -64,14 +66,29 @@ class _MyHomePageState extends State<MyHomePage> {
             // load page count and the data
             return Column(
               children: [
-                MyPageController(snapshot.data!.pageCount),
+                MyPageController(
+                  currentPage: context.watch<AppStateProvider>().page,
+                  pageCount: snapshot.data!.pageCount,
+                ),
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter a search term',
                   ),
+                  onChanged: (value) {
+                    context.read<AppStateProvider>().setSearch(value);
+                    // every time a filter change reset current page to one
+                    context.read<AppStateProvider>().setPage(1);
+                  },
                 ),
-                CategoryDropDown(),
+                CategoryDropDown(
+                  onSelected: (category) {
+                    context.read<AppStateProvider>().setCategory(category!);
+                    // every time a filter change reset current page to one
+                    context.read<AppStateProvider>().setPage(1);
+                  },
+                  value: context.watch<AppStateProvider>().category!,
+                ),
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.datas
