@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -11,7 +13,6 @@ class DataLoader {
   // Define the base URI, including the port
   static final String host = 'localhost';
   static final int port = 3000;
-
   static Future<List<String>> fetchCategories() async {
     // Construct the URI with query parameters
     final uri = Uri(
@@ -98,14 +99,10 @@ class DataLoader {
 
       // Decode the JSON body
       final Map<String, dynamic> data = json.decode(response.body);
-      try {
-        int page_count = data["page_count"];
-        List<dynamic> products = data["products"];
-        var loadedData = LoadedData(products, page_count);
-        return loadedData;
-      } catch (e) {
-        throw e;
-      }
+      int page_count = data["page_count"];
+      List<dynamic> products = data["products"];
+      var loadedData = LoadedData(products, page_count);
+      return loadedData;
     } else {
       // Handle non-200 status codes
       throw new Exception(

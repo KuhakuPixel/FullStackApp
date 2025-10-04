@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/app_state.dart';
 import 'package:frontend/consts.dart';
@@ -48,6 +50,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static Timer? debounce = null;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +79,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintText: 'Enter a search term',
                   ),
                   onChanged: (value) {
-                    context.read<AppStateProvider>().setSearch(value);
-                    // every time a filter change reset current page to one
-                    context.read<AppStateProvider>().setPage(1);
+                    if (debounce != null) {
+                      if (debounce!.isActive) {
+                        debounce!.cancel();
+                      }
+                    }
+                    debounce = Timer(
+                      new Duration(milliseconds: SEARCH_FILTER_DEBOUNCE_MS),
+                      () {
+                        context.read<AppStateProvider>().setSearch(value);
+                        // every time a filter change reset current page to one
+                        context.read<AppStateProvider>().setPage(1);
+                      },
+                    );
                   },
                 ),
                 CategoryDropDown(

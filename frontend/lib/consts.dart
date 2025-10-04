@@ -1,1 +1,2 @@
 const PAGE_LIMIT = 50;
+const SEARCH_FILTER_DEBOUNCE_MS = 300;
