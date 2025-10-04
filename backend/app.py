@@ -25,12 +25,31 @@ def products():
     else:
         limit = int(request.args.get("limit"))
 
-    products = Product.query.paginate(page=page, per_page=limit, error_out=False).items
+    products = (
+        Product.query.with_entities(
+            Product.id, Product.name, Product.price, Product.category, Product.img_url
+        )
+        .paginate(page=page, per_page=limit, error_out=False)
+        .items
+    )
+    products = [
+        {
+            "id": row[0],
+            "name": row[1],
+            "price": row[2],
+            "category": row[3],
+            "img_url": row[4],
+        }
+        for row in products
+    ]
+
     total_products_count = Product.query.count()
-    return jsonify({
-        "products": products,
-        "page_count": math.ceil(total_products_count / limit),
-    })
+    return jsonify(
+        {
+            "products": products,
+            "page_count": math.ceil(total_products_count / limit),
+        }
+    )
 
 
 with app.app_context():
