@@ -28,6 +28,8 @@ def categories():
     categories = Product.query.with_entities(Product.category).distinct().all()
     categories = [row[0] for row in categories]
 
+    categories.append("") # append empty for no select at all
+
     return jsonify(categories)
 
 
@@ -54,7 +56,7 @@ def products():
     products = Product.query.with_entities(
         Product.id, Product.name, Product.price, Product.category, Product.img_url
     ).filter(Product.name.icontains(search))
-    if category != None:
+    if category != None and category != "":
         products = products.filter(Product.category == category)
 
     products_paginated = products.paginate(
