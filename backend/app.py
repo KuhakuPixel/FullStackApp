@@ -23,6 +23,14 @@ def product(id):
     pass
 
 
+@app.route("/categories", methods=["GET"])
+def categories():
+    categories = Product.query.with_entities(Product.category).distinct().all()
+    categories = [row[0] for row in categories]
+
+    return jsonify(categories)
+
+
 @app.route("/products", methods=["GET"])
 def products():
 
