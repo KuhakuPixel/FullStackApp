@@ -67,7 +67,7 @@ class MyPageController extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         IconButton(
-          onPressed: currentPage == 1
+          onPressed: currentPage <= 1
               ? null
               : () {
                   context.read<AppStateProvider>().incrementPage(-1);
@@ -78,7 +78,7 @@ class MyPageController extends StatelessWidget {
         Text("page ${currentPage} / ${pageCount} "),
         Spacer(),
         IconButton(
-          onPressed: (currentPage == pageCount)
+          onPressed: (currentPage >= pageCount)
               ? null
               : () {
                   context.read<AppStateProvider>().incrementPage(1);
