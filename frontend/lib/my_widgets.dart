@@ -92,7 +92,10 @@ class ProductDetailPage extends StatelessWidget {
       appBar: AppBar(title: Text(name)),
       body: Center(
         child: SingleChildScrollView(
+          padding: EdgeInsets.all(12),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("id " + id.toString()),
               Text("price: \$ ${price}"),
