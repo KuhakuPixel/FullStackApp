@@ -12,6 +12,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.sqlite3"
 db.init_app(app)
 
 
+
+@app.route("/products/<int:id>", methods=["GET"])
+def product(id):
+    p = Product.query.get(id)
+    if p != None:
+        return jsonify(p)
+    else:
+        return f"{id} doesn't exist", 404
+
+    pass
 @app.route("/products", methods=["GET"])
 def products():
 
