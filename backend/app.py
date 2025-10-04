@@ -12,7 +12,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.sqlite3"
 db.init_app(app)
 
 
-
 @app.route("/products/<int:id>", methods=["GET"])
 def product(id):
     p = Product.query.get(id)
@@ -22,6 +21,8 @@ def product(id):
         return f"{id} doesn't exist", 404
 
     pass
+
+
 @app.route("/products", methods=["GET"])
 def products():
 
@@ -35,14 +36,20 @@ def products():
     else:
         limit = int(request.args.get("limit"))
 
-    products = (
-        Product.query.with_entities(
-            Product.id, Product.name, Product.price, Product.category, Product.img_url
-        )
-        .paginate(page=page, per_page=limit, error_out=False)
-        .items
-    )
-    products = [
+    if request.args.get("search") == None:
+        search = ""
+    else:
+        search = request.args.get("search")
+
+
+    products =Product.query.with_entities(
+        Product.id, Product.name, Product.price, Product.category, Product.img_url
+    ).filter(Product.name.icontains(search))
+    
+    products_paginated = products.paginate(page=page, per_page=limit, error_out=False).items
+    total_products_count = products.count()
+
+    products_paginated = [
         {
             "id": row[0],
             "name": row[1],
@@ -50,13 +57,12 @@ def products():
             "category": row[3],
             "img_url": row[4],
         }
-        for row in products
+        for row in products_paginated
     ]
 
-    total_products_count = Product.query.count()
     return jsonify(
         {
-            "products": products,
+            "products": products_paginated,
             "page_count": math.ceil(total_products_count / limit),
         }
     )
