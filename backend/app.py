@@ -12,6 +12,39 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.sqlite3"
 db.init_app(app)
 
 
+def apply_filter_to_products(query_args):
+    if request.args.get("page") == None:
+        page = 1
+    else:
+        page = int(request.args.get("page"))
+
+    if request.args.get("limit") == None:
+        limit = 50
+    else:
+        limit = int(request.args.get("limit"))
+
+    if request.args.get("search") == None:
+        search = ""
+    else:
+        search = request.args.get("search")
+
+    category = request.args.get("category")
+
+    products = Product.query.with_entities(
+        Product.id, Product.name, Product.price, Product.category, Product.img_url
+    ).filter(Product.name.icontains(search))
+    if category != None and category != "":
+
+        products = products.filter(Product.category == category)
+
+    products_paginated = products.paginate(
+        page=page, per_page=limit, error_out=False
+    ).items
+
+    total_products_count = products.count()
+    page_count = math.ceil(total_products_count / limit)
+    return products, products_paginated, page_count
+
 @app.route("/products/<int:id>", methods=["GET"])
 def product(id):
     p = Product.query.get(id)
@@ -36,34 +69,7 @@ def categories():
 @app.route("/products", methods=["GET"])
 def products():
 
-    if request.args.get("page") == None:
-        page = 1
-    else:
-        page = int(request.args.get("page"))
-
-    if request.args.get("limit") == None:
-        limit = 50
-    else:
-        limit = int(request.args.get("limit"))
-
-    if request.args.get("search") == None:
-        search = ""
-    else:
-        search = request.args.get("search")
-
-    category = request.args.get("category")
-
-    products = Product.query.with_entities(
-        Product.id, Product.name, Product.price, Product.category, Product.img_url
-    ).filter(Product.name.icontains(search))
-    if category != None and category != "":
-        products = products.filter(Product.category == category)
-
-    products_paginated = products.paginate(
-        page=page, per_page=limit, error_out=False
-    ).items
-    total_products_count = products.count()
-
+    products, products_paginated, page_count = apply_filter_to_products(query_args=request.args)
     products_paginated = [
         {
             "id": row[0],
@@ -78,7 +84,7 @@ def products():
     return jsonify(
         {
             "products": products_paginated,
-            "page_count": math.ceil(total_products_count / limit),
+            "page_count": page_count,
         }
     )
 
