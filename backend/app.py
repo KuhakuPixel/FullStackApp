@@ -66,6 +66,15 @@ def categories():
     return jsonify(categories)
 
 
+
+@app.route("/products_length", methods=["GET"])
+def products_length():
+    """
+        get only the length of the products query
+    """
+    products, products_paginated, page_count = apply_filter_to_products(query_args=request.args)
+    return jsonify({"products_length": len(products_paginated)})
+
 @app.route("/products", methods=["GET"])
 def products():
 
