@@ -41,12 +41,17 @@ def products():
     else:
         search = request.args.get("search")
 
+    category = request.args.get("category")
 
-    products =Product.query.with_entities(
+    products = Product.query.with_entities(
         Product.id, Product.name, Product.price, Product.category, Product.img_url
     ).filter(Product.name.icontains(search))
-    
-    products_paginated = products.paginate(page=page, per_page=limit, error_out=False).items
+    if category != None:
+        products = products.filter(Product.category == category)
+
+    products_paginated = products.paginate(
+        page=page, per_page=limit, error_out=False
+    ).items
     total_products_count = products.count()
 
     products_paginated = [
