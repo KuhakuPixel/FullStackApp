@@ -12,6 +12,32 @@ class DataLoader {
   static final String host = 'localhost';
   static final int port = 3000;
 
+  static Future<List<String>> fetchCategories() async {
+    // Construct the URI with query parameters
+    final uri = Uri(
+      scheme: 'http',
+      host: host,
+      port: port,
+      path: "/categories",
+    );
+
+    // Send the GET request
+    final response = await http.get(uri);
+
+    // Check if the request was successful (status code 200)
+    if (response.statusCode == 200) {
+      // Decode the JSON body
+      final List<dynamic> dataDynamic = json.decode(response.body);
+
+      return dataDynamic.cast<String>();
+    } else {
+      // Handle non-200 status codes
+      throw new Exception(
+        'Failed to fetch data. Status code: ${response.statusCode}',
+      );
+    }
+  }
+
   static Future<Map<String, dynamic>> fetchProduct(int id) async {
     // Construct the URI with query parameters
     final uri = Uri(

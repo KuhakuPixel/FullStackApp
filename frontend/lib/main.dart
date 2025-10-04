@@ -65,6 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
             return Column(
               children: [
                 MyPageController(snapshot.data!.pageCount),
+                TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter a search term',
+                  ),
+                ),
+                CategoryDropDown(),
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.datas
@@ -80,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
-                                  builder: (context) =>  ProductDetailPage(
+                                  builder: (context) => ProductDetailPage(
                                     category: p["category"],
                                     description: p["description"],
                                     id: p["id"],

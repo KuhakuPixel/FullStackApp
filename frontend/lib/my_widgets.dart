@@ -1,6 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/app_state.dart';
+import 'package:frontend/data_loader.dart';
 import 'package:provider/provider.dart';
+
+class CategoryDropDown extends StatelessWidget {
+  CategoryDropDown();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: DataLoader.fetchCategories(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          // Handle the error state
+          return Center(child: Text(' ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          //return Container();
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              /*
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Enter Search ...',
+                ),
+              ),
+
+              */
+              DropdownButton<String>(
+                value: context.watch<AppStateProvider>().category,
+                items: snapshot.data!.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  // TODO add callback
+                  context.read<AppStateProvider>().setCategory(value!);
+                },
+              ),
+            ],
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+    ;
+  }
+}
 
 class MyPageController extends StatelessWidget {
   int pageCount = 0;
