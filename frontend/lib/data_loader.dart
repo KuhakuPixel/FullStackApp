@@ -178,7 +178,7 @@ class DataLoader {
         },
       );
       print('Attempting to fetch data from: $uri');
-      final response = await http.get(uri);
+      final response = await http.get(uri).timeout(const Duration(seconds: 4));
       // Check if the request was successful (status code 200)
       if (response.statusCode == 200) {
         print('Successfully fetched products (Status: 200)');
@@ -222,7 +222,9 @@ class DataLoader {
       );
       */
       }
-    } catch (e) {}
+    } catch (e) {
+      print("exception: " + e.toString());
+    }
     int pageCount = max(productsLoadedFromDb.pageCount, pageCountFromNetwork);
     return LoadedData(products, pageCount);
   }
