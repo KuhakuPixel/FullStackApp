@@ -1,8 +1,12 @@
+import 'package:frontend/model.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'dart:convert';
 
+import 'package:sqflite/sqflite.dart';
+
 class LoadedData {
-  List<dynamic> datas;
+  List<Product> datas;
   int pageCount;
   LoadedData(this.datas, this.pageCount);
 }
@@ -11,7 +15,7 @@ class DataLoader {
   // Define the base URI, including the port
   static final String host = '192.168.1.9';
   static final int port = 3000;
-  // TODO: provide offline support
+  static Database? database = null;
   static Future<List<String>> fetchCategories() async {
     // Construct the URI with query parameters
     final uri = Uri(
@@ -65,6 +69,28 @@ class DataLoader {
     }
   }
 
+  // TODO: how to return page count?
+  static Future<LoadedData> fetchProductsFromDB(
+    Database database,
+    int page,
+    int limit, {
+    required String category,
+    required String search,
+  }) async {
+    var resultList = await database.rawQuery(
+      "SELECT id, name, price, description, category, img_url FROM products;",
+    );
+    var resultListPaginated = await database.rawQuery(
+      "SELECT id, name, price, description, category, img_url FROM products ORDER BY ID LIMIT ${limit} OFFSET ${(page - 1) * limit};",
+    );
+
+    List<Product> productsPaginated = [];
+    for (var result in resultListPaginated) {
+      productsPaginated.add(Product.fromMap(result));
+    }
+    return LoadedData(productsPaginated, (resultList.length / limit).ceil());
+  }
+
   static Future<LoadedData> fetchProducts(
     int page,
     int limit, {
@@ -72,25 +98,55 @@ class DataLoader {
     required String search,
   }) async {
     final String path = '/products';
+    List<Product> products = [];
 
-    // Construct the URI with query parameters
-    final uri = Uri(
-      scheme: 'http',
-      host: host,
-      port: port,
-      path: path,
-      queryParameters: {
-        'page': page.toString(),
-        'limit': limit.toString(),
-        "search": search,
-        "category": category,
-      },
+    // Open the database and store the reference.
+    // ignore: prefer_conditional_assignment
+    if (database == null) {
+      database = await openDatabase(
+        join(await getDatabasesPath(), 'data.db'),
+        // When the database is first created, create a table to store data.
+        onCreate: (db, version) {
+          // Run the CREATE TABLE statement on the database.
+          return db.execute(
+            'CREATE TABLE products (id INT PRIMARY KEY, name TEXT, price INT, description TEXT, category TEXT, img_url TEXT);',
+          );
+        },
+        // Set the version. This executes the onCreate function and provides a
+        // path to perform database upgrades and downgrades.
+        version: 1,
+      );
+    }
+
+    // load from offline storage
+    var productsLoadedFromDb = await fetchProductsFromDB(
+      database!,
+      page,
+      limit,
+      category: category,
+      search: search,
     );
+    products.addAll(productsLoadedFromDb.datas);
+    var idsToExclude = productsLoadedFromDb.datas.map((e) => e.id).toList();
 
-    print('Attempting to fetch data from: $uri');
-
+    // TODO: check if I should perform a network request?
+    // get request to fetch item
     try {
-      // Send the GET request
+      // Construct the URI with query parameters
+      final uri = Uri(
+        scheme: 'http',
+        host: host,
+        port: port,
+        path: path,
+        queryParameters: {
+          'page': page.toString(),
+          'limit': limit.toString(),
+          "search": search,
+          "category": category,
+          "exclude_ids": idsToExclude.toString(),
+        },
+      );
+      print('Attempting to fetch data from: $uri');
       final response = await http.get(uri);
       // Check if the request was successful (status code 200)
       if (response.statusCode == 200) {
@@ -99,7 +155,31 @@ class DataLoader {
         // Decode the JSON body
         final Map<String, dynamic> data = json.decode(response.body);
         int page_count = data["page_count"];
-        List<dynamic> products = data["products"];
+        List<dynamic> products_dynamic = data["products"];
+        List<Product> productsLoadedFromNetwork = products_dynamic
+            .map(
+              (element) => Product(
+                category: element["category"],
+                description:
+                    null, // description isn't available when getting a product list so we set it to null
+                id: element["id"],
+                imgUrl: element["img_url"],
+                name: element["name"],
+                price: element["price"],
+              ),
+            )
+            .toList();
+
+        products.addAll(productsLoadedFromNetwork);
+        // save network result to db
+        for (var p in productsLoadedFromNetwork) {
+          await database!.insert(
+            'products',
+            p.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+          print("saving ${p.id} to offline storage");
+        }
         var loadedData = LoadedData(products, page_count);
         return loadedData;
       } else {
@@ -112,7 +192,7 @@ class DataLoader {
       */
       }
     } catch (e) {
-        return LoadedData([], 0);
+      return LoadedData(products, (products.length / limit).ceil());
     }
   }
 }

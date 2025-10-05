@@ -73,11 +73,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: snapshot.data!.datas
                     .map(
                       (data) => SearchResultWidget(
-                        data["name"],
-                        data["price"],
-                        data["category"],
+                        data.name,
+                        data.price,
+                        data.category,
                         onViewDetail: () async {
-                          var p = await DataLoader.fetchProduct(data["id"]);
+                          var p = await DataLoader.fetchProduct(data.id);
                           print(p);
 
                           Navigator.push(
