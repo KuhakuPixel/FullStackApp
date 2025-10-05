@@ -25,6 +25,12 @@ run backend
 python3 app.py
 ```
 
+run tests
+
+```
+pytest test.py
+```
+
 ## Frontend
 
 navigate to frontend folder
