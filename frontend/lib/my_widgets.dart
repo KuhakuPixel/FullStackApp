@@ -147,7 +147,7 @@ class ProductDetailPage extends StatelessWidget {
             children: [
               Text("id " + product.id.toString()),
               Text("price: \$ ${product.price}"),
-              Text("description:  ${product.description}"),
+              Text("description:  ${product.description == null ? "no description available, need internet connection" : product.description}"),
               Text("category:  ${product.category}"),
               Image.network(
                 "${product.imgUrl}?${product.id}",
