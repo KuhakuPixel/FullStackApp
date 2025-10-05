@@ -11,6 +11,7 @@ class DataLoader {
   // Define the base URI, including the port
   static final String host = '192.168.1.9';
   static final int port = 3000;
+  // TODO: provide offline support
   static Future<List<String>> fetchCategories() async {
     // Construct the URI with query parameters
     final uri = Uri(
@@ -88,24 +89,30 @@ class DataLoader {
 
     print('Attempting to fetch data from: $uri');
 
-    // Send the GET request
-    final response = await http.get(uri);
+    try {
+      // Send the GET request
+      final response = await http.get(uri);
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        print('Successfully fetched products (Status: 200)');
 
-    // Check if the request was successful (status code 200)
-    if (response.statusCode == 200) {
-      print('Successfully fetched products (Status: 200)');
-
-      // Decode the JSON body
-      final Map<String, dynamic> data = json.decode(response.body);
-      int page_count = data["page_count"];
-      List<dynamic> products = data["products"];
-      var loadedData = LoadedData(products, page_count);
-      return loadedData;
-    } else {
-      // Handle non-200 status codes
+        // Decode the JSON body
+        final Map<String, dynamic> data = json.decode(response.body);
+        int page_count = data["page_count"];
+        List<dynamic> products = data["products"];
+        var loadedData = LoadedData(products, page_count);
+        return loadedData;
+      } else {
+        return LoadedData([], 0);
+        // Handle non-200 status codes
+        /*
       throw new Exception(
         'Failed to fetch datas. Status code: ${response.statusCode}',
       );
+      */
+      }
+    } catch (e) {
+        return LoadedData([], 0);
     }
   }
 }

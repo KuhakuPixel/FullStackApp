@@ -4,10 +4,9 @@ import 'package:frontend/data_loader.dart';
 import 'package:provider/provider.dart';
 
 class CategoryDropDown extends StatelessWidget {
-
   void Function(String?) onSelected;
   String value;
-  CategoryDropDown({required this.onSelected, required this.value });
+  CategoryDropDown({required this.onSelected, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,11 @@ class CategoryDropDown extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           // Handle the error state
-          return Center(child: Text(' ${snapshot.error}'));
+          return Center(
+            child: Text(
+              'cannot fetch categories due to offline, need to be online first to download it: ${snapshot.error}',
+            ),
+          );
         } else if (snapshot.hasData) {
           //return Container();
           return Row(
@@ -41,8 +44,7 @@ class CategoryDropDown extends StatelessWidget {
                 }).toList(),
                 onChanged: (value) {
                   // TODO add callback
-                  onSelected(value)
-                  ;
+                  onSelected(value);
                 },
               ),
             ],
@@ -59,7 +61,7 @@ class CategoryDropDown extends StatelessWidget {
 class MyPageController extends StatelessWidget {
   int pageCount = 0;
   int currentPage = 1;
-  MyPageController({required this.currentPage,required this.pageCount});
+  MyPageController({required this.currentPage, required this.pageCount});
 
   @override
   Widget build(BuildContext context) {
