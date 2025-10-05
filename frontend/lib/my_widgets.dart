@@ -128,11 +128,41 @@ class SearchResultWidget extends StatelessWidget {
   }
 }
 
+class AiSummaryPage extends StatelessWidget {
+  String description;
+  AiSummaryPage({required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("AI Summary")),
+      body: FutureBuilder<String>(
+        future: DataLoader.aiSummary(description),
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasError) {
+            // Handle the error state
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return Text(snapshot.data!);
+          } else {
+            return Center(
+              child: Column(
+                children: [
+                  Text("AI summary is loading, please wait"),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
 class ProductDetailPage extends StatelessWidget {
   Product product;
-  ProductDetailPage({
-    required this.product,
-  });
+  ProductDetailPage({required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -147,18 +177,28 @@ class ProductDetailPage extends StatelessWidget {
             children: [
               Text("id: " + product.id.toString()),
               Text("price: \$ ${product.price}"),
-              Text("description:  ${product.description == null ? "no description available, no internet connection or server is down" : product.description}"),
-              Text("category:  ${product.category}"),
-              Image.network(
-                "${product.imgUrl}?${product.id}",
+              Text(
+                "description:  ${product.description == null ? "no description available, no internet connection or server is down" : product.description}",
               ),
+              Text("category:  ${product.category}"),
+              Image.network("${product.imgUrl}?${product.id}"),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   // Navigate back to first route when tapped.
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => AiSummaryPage(
+                        description: product.description == null
+                            ? ""
+                            : product.description!,
+                      ),
+                    ),
+                  );
                 },
-                child: const Text('Go back!'),
+                child: const Text('View AI Summary'),
               ),
             ],
           ),

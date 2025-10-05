@@ -44,6 +44,30 @@ class DataLoader {
     }
   }
 
+  static Future<String> aiSummary(String description) async {
+    // Construct the URI with query parameters
+    final uri = Uri(
+      scheme: 'http',
+      host: host,
+      port: port,
+      path: "/ai-summary",
+        queryParameters: {
+          'text': description,
+        },
+
+    );
+    try {
+      print('Attempting to fetch data from: $uri');
+      // Send the GET request
+      final response = await http.post(uri);
+      // Check if the request was successful (status code 200)
+      return response.body;
+    } catch (e) {
+      // just return the current product if we are unable to connect to the internet
+      return "can't connect to AI, no internet connection";
+    }
+  }
+
   static Future<Product> fetchProduct(int id) async {
     var productResult = (await database!.rawQuery(
       "SELECT * FROM products WHERE id = ${id}",
@@ -203,6 +227,7 @@ class DataLoader {
 
         products.addAll(productsLoadedFromNetwork);
         // save network result to db
+        // TODO: perhaps we can do this on another thread?
         for (var p in productsLoadedFromNetwork) {
           await database!.insert(
             'products',
