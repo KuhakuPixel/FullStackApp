@@ -186,7 +186,6 @@ class ProductDetailPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Navigate back to first route when tapped.
-                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
