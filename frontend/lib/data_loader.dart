@@ -100,6 +100,7 @@ class DataLoader {
     var resultList = await database.rawQuery(
       "SELECT id, name, price, description, category, img_url FROM products ${whereClause};",
     );
+    /*
     List<Map<String, dynamic>> resultListPaginated = [];
     int loopCount = min(limit, resultList.length);
     for (
@@ -109,11 +110,10 @@ class DataLoader {
     ) {
       resultListPaginated.add(resultList[i]);
     }
-    /*
+    */
     var resultListPaginated = await database.rawQuery(
       "SELECT id, name, price, description, category, img_url FROM products ${whereClause} ORDER BY ID LIMIT ${limit} OFFSET ${(page - 1) * limit};",
     );
-    */
     List<Product> productsPaginated = [];
     for (var result in resultListPaginated) {
       productsPaginated.add(Product.fromMap(result));
