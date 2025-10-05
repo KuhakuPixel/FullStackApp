@@ -130,6 +130,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                 ),
+
+                DropdownButton<String>(
+                  value: context.watch<AppStateProvider>().category,
+                  items: BOOK_CATEGORIES.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (category) {
+                    context.read<AppStateProvider>().setCategory(category!);
+                    // every time a filter change reset current page to one
+                    context.read<AppStateProvider>().setPage(1);
+                  },
+                ),
+                /*
                 CategoryDropDown(
                   onSelected: (category) {
                     context.read<AppStateProvider>().setCategory(category!);
@@ -138,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   value: context.watch<AppStateProvider>().category!,
                 ),
+                */
                 Expanded(child: searchResultWidget),
               ],
             );
