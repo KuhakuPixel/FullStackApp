@@ -1,6 +1,8 @@
 
 # FullStack App
 
+This full-stack Product Catalog application, built with **Flutter (Frontend)** and a **Python/Flask API (Backend)**, is designed to demonstrate efficient data handling for large datasets (500+ items). The app fetches product data via a paginated REST API and uses local caching (SQflite) to ensure immediate offline support . It features responsive, real-time search and category filtering against the data, and an optional AI integration provides concise, on-demand summaries of product descriptions.
+
 [demo video (please download first for best quality)](https://drive.google.com/file/d/1QSmQfVVjc-FAHOnpekFz9hqwt3JL2h8D/view?usp=sharing)
 
 <br>
@@ -141,3 +143,16 @@ If multiple devices are detected, specify the device ID:
 ```bash
 flutter run -d <device-id>
 ```
+
+## Choices
+
+### 🏛️ Backend Architecture: Flask + SQLite
+
+**Flask** and **SQLite** are chosen for the backend architecture because they are fast, simple, and make setup incredibly easy. 
+
+| Component | Technology | Why It is chosen |
+| :--- | :--- | :--- |
+| **Framework** | **Flask** | Flask is a lightweight micro-framework, perfect for building a simple REST API without unnecessary bloat. It gets out of the way, which minimizes overhead and keeps the code clean and easy to manage for an application of this size. |
+| **Database** | **SQLite** | SQLite is a zero-configuration, file-based database. **Crucially, since this app is primarily designed for a single person to use locally or in a small sandbox environment,** SQLite is the ideal choice. It runs straight out of a file, meaning there’s no need to set up or manage a separate database server (like MySQL or Postgres), simplifying the entire setup process. |
+
+This combination allows the application to be entirely self-contained within the backend directory, which really helps streamline dependency management and deployment!
