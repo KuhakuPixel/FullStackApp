@@ -44,32 +44,45 @@ class DataLoader {
     }
   }
 
-  static Future<Map<String, dynamic>> fetchProduct(int id) async {
-    // Construct the URI with query parameters
-    final uri = Uri(
-      scheme: 'http',
-      host: host,
-      port: port,
-      path: "/products/${id}",
-    );
-    // TODO: save product detail to db
-
-    print('Attempting to fetch data from: $uri');
-
-    // Send the GET request
-    final response = await http.get(uri);
-
-    // Check if the request was successful (status code 200)
-    if (response.statusCode == 200) {
-      // Decode the JSON body
-      final Map<String, dynamic> data = json.decode(response.body);
-      return data;
-    } else {
-      // Handle non-200 status codes
-      throw new Exception(
-        'Failed to fetch data. Status code: ${response.statusCode}',
+  static Future<Product> fetchProduct(int id) async {
+    var productResult = (await database!.rawQuery(
+      "SELECT * FROM products WHERE id = ${id}",
+    )).first;
+    var product = Product.fromMap(productResult);
+    // try to fetch from network
+    if (product.description == null) {
+      // Construct the URI with query parameters
+      final uri = Uri(
+        scheme: 'http',
+        host: host,
+        port: port,
+        path: "/products/${id}",
       );
+      // TODO: save product detail to db
+
+      try {
+        print('Attempting to fetch data from: $uri');
+        // Send the GET request
+        final response = await http.get(uri);
+        // Check if the request was successful (status code 200)
+        if (response.statusCode == 200) {
+          // Decode the JSON body
+          final Map<String, dynamic> data = json.decode(response.body);
+          await database!.insert(
+            'products',
+            data,
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+          return Product.fromMap(data);
+        } else {
+          return product;
+        }
+      } catch (e) {
+        // just return the current product if we are unable to connect to the internet
+        return product;
+      }
     }
+    return product;
   }
 
   // TODO: how to return page count?
@@ -85,7 +98,7 @@ class DataLoader {
     );
 
     var whereClause = "WHERE name LIKE '%${search}%'";
-    if (category != ""){
+    if (category != "") {
       whereClause += " AND category = '${category}'";
     }
     var resultListPaginated = await database.rawQuery(
@@ -188,7 +201,9 @@ class DataLoader {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
-        print("saved ${productsLoadedFromNetwork.length} items to offline storage");
+        print(
+          "saved ${productsLoadedFromNetwork.length} items to offline storage",
+        );
       } else {
         return LoadedData([], 0);
         // Handle non-200 status codes

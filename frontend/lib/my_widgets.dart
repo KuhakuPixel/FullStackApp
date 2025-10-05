@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/app_state.dart';
 import 'package:frontend/data_loader.dart';
+import 'package:frontend/model.dart';
 import 'package:provider/provider.dart';
 
 class CategoryDropDown extends StatelessWidget {
@@ -128,25 +129,15 @@ class SearchResultWidget extends StatelessWidget {
 }
 
 class ProductDetailPage extends StatelessWidget {
-  int id;
-  String name;
-  int price;
-  String description;
-  String category;
-  String img_url;
+  Product product;
   ProductDetailPage({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.description,
-    required this.category,
-    required this.img_url,
+    required this.product,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(name)),
+      appBar: AppBar(title: Text(product.name)),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(12),
@@ -154,12 +145,12 @@ class ProductDetailPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("id " + id.toString()),
-              Text("price: \$ ${price}"),
-              Text("description:  ${description}"),
-              Text("category:  ${category}"),
+              Text("id " + product.id.toString()),
+              Text("price: \$ ${product.price}"),
+              Text("description:  ${product.description}"),
+              Text("category:  ${product.category}"),
               Image.network(
-                "${img_url}?${id}",
+                "${product.imgUrl}?${product.id}",
               ),
               SizedBox(height: 10),
               ElevatedButton(
