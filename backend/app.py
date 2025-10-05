@@ -3,6 +3,7 @@ from model import Product, db
 from db_seeder import get_random_data
 from flask import request, jsonify
 import math
+import json
 
 
 app = Flask(__name__)
@@ -28,11 +29,17 @@ def apply_filter_to_products(query_args):
     else:
         search = request.args.get("search")
 
+    if request.args.get("exclude_ids") == None:
+        exclude_ids = []
+    else:
+        exclude_ids = json.loads(request.args.get("exclude_ids"))
+
     category = request.args.get("category")
 
     products = Product.query.with_entities(
         Product.id, Product.name, Product.price, Product.category, Product.img_url
     ).filter(Product.name.icontains(search))
+
     if category != None and category != "":
 
         products = products.filter(Product.category == category)
@@ -40,6 +47,9 @@ def apply_filter_to_products(query_args):
     products_paginated = products.paginate(
         page=page, per_page=limit, error_out=False
     ).items
+
+    # filter by id, p[0] for id
+    products_paginated = [p for p in products_paginated if p[0] not in exclude_ids]
 
     total_products_count = products.count()
     page_count = math.ceil(total_products_count / limit)
