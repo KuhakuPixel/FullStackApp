@@ -89,7 +89,7 @@ pytest test.py
 ### 1\. **Navigate to the Frontend Directory**
 
 ```bash
-cd ../frontend
+cd frontend
 ```
 
 ### 2\. **Install Dependencies**
