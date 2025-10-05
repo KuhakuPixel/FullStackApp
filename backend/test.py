@@ -67,7 +67,7 @@ def test_3_exclusion_of_ids_works_correctly():
                    f"Product ID {excluded_id} was found in the results despite being excluded."
             
         # Sanity check: Ensure the list is not empty
-        assert len(returned_products) > 0, "No products were returned after exclusion, check seeding."
+        assert len(returned_products) > 0, "No products were returned after exclusion"
         
     except json.JSONDecodeError:
         assert False, "Response could not be decoded as JSON."
