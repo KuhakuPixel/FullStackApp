@@ -15,7 +15,7 @@ class LoadedData {
 
 class DataLoader {
   // Define the base URI, including the port
-  static final String host = '192.168.1.9';
+  static final String host = '10.0.2.2'; //  IP address of the machine Python server is running (only available in emulator)
   static final int port = 3000;
   static Database? database = null;
   static Future<List<String>> fetchCategories() async {
