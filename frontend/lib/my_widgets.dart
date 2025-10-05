@@ -159,7 +159,7 @@ class ProductDetailPage extends StatelessWidget {
               Text("description:  ${description}"),
               Text("category:  ${category}"),
               Image.network(
-                "${img_url}?${DateTime.now().millisecondsSinceEpoch.toString()}",
+                "${img_url}?${id}",
               ),
               SizedBox(height: 10),
               ElevatedButton(
