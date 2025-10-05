@@ -67,8 +67,44 @@ class _MyHomePageState extends State<MyHomePage> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             // load page count and the data
+            Widget searchResultWidget;
+            if (snapshot.data!.datas.length > 0) {
+              searchResultWidget = ListView(
+                children: snapshot.data!.datas
+                    .map(
+                      (data) => SearchResultWidget(
+                        data["name"],
+                        data["price"],
+                        data["category"],
+                        onViewDetail: () async {
+                          var p = await DataLoader.fetchProduct(data["id"]);
+                          print(p);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => ProductDetailPage(
+                                category: p["category"],
+                                description: p["description"],
+                                id: p["id"],
+                                img_url: p["img_url"],
+                                name: p["name"],
+                                price: p["price"],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                    .toList(),
+              );
+            } else {
+              searchResultWidget = Center(child: Text('No Result'));
+            }
             return Column(
               children: [
+                SizedBox(height: 50),
+
                 MyPageController(
                   currentPage: context.watch<AppStateProvider>().page,
                   pageCount: snapshot.data!.pageCount,
@@ -102,37 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   value: context.watch<AppStateProvider>().category!,
                 ),
-                Expanded(
-                  child: ListView(
-                    children: snapshot.data!.datas
-                        .map(
-                          (data) => SearchResultWidget(
-                            data["name"],
-                            data["price"],
-                            data["category"],
-                            onViewDetail: () async {
-                              var p = await DataLoader.fetchProduct(data["id"]);
-                              print(p);
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => ProductDetailPage(
-                                    category: p["category"],
-                                    description: p["description"],
-                                    id: p["id"],
-                                    img_url: p["img_url"],
-                                    name: p["name"],
-                                    price: p["price"],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
+                Expanded(child: searchResultWidget),
               ],
             );
           } else {

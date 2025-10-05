@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -11,7 +9,7 @@ class LoadedData {
 
 class DataLoader {
   // Define the base URI, including the port
-  static final String host = 'localhost';
+  static final String host = '192.168.1.9';
   static final int port = 3000;
   static Future<List<String>> fetchCategories() async {
     // Construct the URI with query parameters
