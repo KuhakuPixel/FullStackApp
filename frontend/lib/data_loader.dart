@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:frontend/model.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -50,6 +52,7 @@ class DataLoader {
       port: port,
       path: "/products/${id}",
     );
+    // TODO: save product detail to db
 
     print('Attempting to fetch data from: $uri');
 
@@ -80,8 +83,13 @@ class DataLoader {
     var resultList = await database.rawQuery(
       "SELECT id, name, price, description, category, img_url FROM products;",
     );
+
+    var whereClause = "WHERE name LIKE '%${search}%'";
+    if (category != ""){
+      whereClause += " AND category = '${category}'";
+    }
     var resultListPaginated = await database.rawQuery(
-      "SELECT id, name, price, description, category, img_url FROM products ORDER BY ID LIMIT ${limit} OFFSET ${(page - 1) * limit};",
+      "SELECT id, name, price, description, category, img_url FROM products ${whereClause} ORDER BY ID LIMIT ${limit} OFFSET ${(page - 1) * limit};",
     );
 
     List<Product> productsPaginated = [];
@@ -117,7 +125,8 @@ class DataLoader {
         version: 1,
       );
     }
-
+    List<Product> productsLoadedFromNetwork;
+    int pageCountFromNetwork = 0;
     // load from offline storage
     var productsLoadedFromDb = await fetchProductsFromDB(
       database!,
@@ -154,9 +163,9 @@ class DataLoader {
 
         // Decode the JSON body
         final Map<String, dynamic> data = json.decode(response.body);
-        int page_count = data["page_count"];
+        pageCountFromNetwork = data["page_count"];
         List<dynamic> products_dynamic = data["products"];
-        List<Product> productsLoadedFromNetwork = products_dynamic
+        productsLoadedFromNetwork = products_dynamic
             .map(
               (element) => Product(
                 category: element["category"],
@@ -178,10 +187,8 @@ class DataLoader {
             p.toMap(),
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
-          print("saving ${p.id} to offline storage");
         }
-        var loadedData = LoadedData(products, page_count);
-        return loadedData;
+        print("saved ${productsLoadedFromNetwork.length} items to offline storage");
       } else {
         return LoadedData([], 0);
         // Handle non-200 status codes
@@ -191,8 +198,8 @@ class DataLoader {
       );
       */
       }
-    } catch (e) {
-      return LoadedData(products, (products.length / limit).ceil());
-    }
+    } catch (e) {}
+    int pageCount = max(productsLoadedFromDb.pageCount, pageCountFromNetwork);
+    return LoadedData(products, pageCount);
   }
 }
