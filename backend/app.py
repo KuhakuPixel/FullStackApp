@@ -102,7 +102,7 @@ def ai_summary():
         return str(response.text), HTTPStatus.OK
     except Exception as e:
         return (
-            f"{e}",
+            f"{e.message}",
             HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 

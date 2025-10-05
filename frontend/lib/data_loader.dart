@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:frontend/model.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -150,6 +151,8 @@ class DataLoader {
     int limit, {
     required String category,
     required String search,
+    required VoidCallback beforeLoaded,
+    required VoidCallback afterLoaded,
   }) async {
     final String path = '/products';
     List<Product> products = [];
@@ -171,6 +174,7 @@ class DataLoader {
         version: 1,
       );
     }
+    beforeLoaded();
     List<Product> productsLoadedFromNetwork;
     int pageCountFromNetwork = 0;
     // load from offline storage
@@ -239,6 +243,7 @@ class DataLoader {
           "saved ${productsLoadedFromNetwork.length} items to offline storage",
         );
       } else {
+        afterLoaded();
         return LoadedData([], 0);
         // Handle non-200 status codes
         /*
@@ -250,6 +255,7 @@ class DataLoader {
     } catch (e) {
       print("exception: " + e.toString());
     }
+    afterLoaded();
     int pageCount = max(productsLoadedFromDb.pageCount, pageCountFromNetwork);
     return LoadedData(products, pageCount);
   }

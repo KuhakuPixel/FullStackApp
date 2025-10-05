@@ -59,6 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
           context.watch<AppStateProvider>().page,
           search: context.watch<AppStateProvider>().search,
           category: context.watch<AppStateProvider>().category,
+          beforeLoaded: () {
+            context.read<AppStateProvider>().setIsDataLoading(true);
+          },
+          afterLoaded: () {
+            context.read<AppStateProvider>().setIsDataLoading(false);
+          },
           PAGE_LIMIT,
         ),
         builder: (BuildContext context, AsyncSnapshot<LoadedData> snapshot) {
@@ -68,7 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (snapshot.hasData) {
             // load page count and the data
             Widget searchResultWidget;
-            if (snapshot.data!.datas.length > 0) {
+
+            if (context.watch<AppStateProvider>().isDataLoading) {
+              searchResultWidget = Center(child: CircularProgressIndicator());
+            } else if (snapshot.data!.datas.length > 0) {
               searchResultWidget = ListView(
                 children: snapshot.data!.datas
                     .map(
@@ -83,7 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (context) => ProductDetailPage(product:p),
+                              builder: (context) =>
+                                  ProductDetailPage(product: p),
                             ),
                           );
                         },
