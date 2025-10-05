@@ -66,7 +66,8 @@ pip install -r requirements.txt
 ### 4\. **Initialize Gemini API Key**
 
 Create a new file named **`.env`** in the `backend` folder.
-Inside the file, add your Gemini API key:
+
+Add your Gemini API key. You can get a key from https://aistudio.google.com/.
 
 ```ini
 GEMINI_API_KEY="<YOUR API KEY>"
