@@ -93,18 +93,27 @@ class DataLoader {
     required String category,
     required String search,
   }) async {
-    var resultList = await database.rawQuery(
-      "SELECT id, name, price, description, category, img_url FROM products;",
-    );
-
     var whereClause = "WHERE name LIKE '%${search}%'";
     if (category != "") {
       whereClause += " AND category = '${category}'";
     }
+    var resultList = await database.rawQuery(
+      "SELECT id, name, price, description, category, img_url FROM products ${whereClause};",
+    );
+    List<Map<String, dynamic>> resultListPaginated = [];
+    int loopCount = min(limit, resultList.length);
+    for (
+      int i = (page - 1) * limit;
+      i < ((page - 1) * limit) + loopCount;
+      i++
+    ) {
+      resultListPaginated.add(resultList[i]);
+    }
+    /*
     var resultListPaginated = await database.rawQuery(
       "SELECT id, name, price, description, category, img_url FROM products ${whereClause} ORDER BY ID LIMIT ${limit} OFFSET ${(page - 1) * limit};",
     );
-
+    */
     List<Product> productsPaginated = [];
     for (var result in resultListPaginated) {
       productsPaginated.add(Product.fromMap(result));
